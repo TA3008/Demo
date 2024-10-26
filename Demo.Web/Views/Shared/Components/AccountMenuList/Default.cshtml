@@ -1,0 +1,51 @@
+﻿@using Demo.Web.Helpers
+@using Demo.Web.ViewModels
+@model AccountMenuViewModel
+
+@if (Model != null)
+{
+    var href = Model.IsAuthenticated ? "javascript:void(0);" : @FriendlyUrl.Login;
+    if (Model.IsAuthenticated)
+    {
+        <li class="has-children">
+            <div class="user-profile">
+                <img src="~/assets/img/user-face.jpeg" alt="User" class="img30x30"> 
+                <a class="link style3" href="@href">Hello, @User.Identity.Name</a>
+                
+                <ul class="sub-menu">
+                    @if (Model.AdminPermission)
+                    {
+                        <li><h4><a href="@FriendlyUrl.Admin">Đến trang quản trị</a></h4></li>
+                    }
+                    <li><h4><a href="@FriendlyUrl.MyCourses()">Khoá học của tôi</a></h4></li>
+                    <li><h4><a href="@FriendlyUrl.MyOrders()">Đơn hàng của tôi</a></h4></li>
+                    <li><h4><a href="@FriendlyUrl.MyProfile()">Thông tin cá nhân</a></h4></li>
+                    
+                    @if (!Model.IsExternalLogin)
+                    {
+                        <li><h4><a href="/accounts/changepassword">Đổi mật khẩu</a></h4></li>
+                    }
+
+                    <li>
+                        <h4><a href="javascript:void(0)" onclick="$('#logoutForm').submit()">Thoát</a></h4>
+                        <form method="post" enctype="multipart/form-data" asp-controller="Accounts" asp-action="Logout" asp-area=""
+                            id="logoutForm" class="hidden"></form>
+                    </li>
+                </ul>
+            </div>
+
+            @if (ViewBag.CartCount != null && ViewBag.CartCount > 0)
+            {
+                <a href="/cart.html"><img src="~/assets/img/cart/cart-full.png" class="img30x30 cart-icon"/></a>
+            }
+            else
+            {
+                <a href="/cart.html"><img src="~/assets/img/cart/cart-null.png" class="img30x30 cart-icon"/></a>
+            }
+        </li>
+    }
+    else
+    {
+        <a href="/accounts/login" class="link style3">Login/Register</a>
+    }
+}

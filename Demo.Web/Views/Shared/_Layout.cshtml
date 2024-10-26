@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="zxx">
+
+<!-- Mirrored from templates.hibootstrap.com/Demo/default/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 25 Apr 2024 16:17:52 GMT -->
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Demo Education - Chuyên trang cung cấp các khoá học trực tuyến</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com/">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&amp;family=Poppins:wght@200;300;400;500;600;700;800&amp;display=swap"
+          rel="stylesheet">
+
+    <link rel="shortcut icon" href="~/assets/img/favicon.png" type="image/png">
+
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="~/assets/css/jquery-ui.min.css" rel="stylesheet">
+
+    <link href="~/assets/css/line-awesome.min.css" rel="stylesheet">
+    <link href="~/assets/css/remixicon.css" rel="stylesheet">
+
+    <link href="~/assets/css/animate.min.css" rel="stylesheet">
+
+    <link href="~/assets/css/swiper.min.css" rel="stylesheet">
+
+    <link href="~/assets/scss/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/assets/css/theme.css" />
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+
+    <div class="preloader js-preloader">
+        <img src="~/assets/img/preloader.gif" alt="Image">
+    </div>
+
+
+    <div class="switch-theme-mode">
+        <label id="switch" class="switch">
+            <input type="checkbox" onchange="toggleTheme()" id="slider">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <partial name="_HeaderMenu"></partial>
+
+    <div class="page-wrapper">
+        @RenderBody()
+    </div>
+
+    <partial name="_Footer"></partial>
+
+    <a href="javascript:void(0)" class="back-to-top bounce"><i class="las la-arrow-up"></i></a>
+
+
+    <script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="~/assets/js/jquery.min.js"></script>
+
+    <script src="~/~/assets/js/jquery-ui.min.js"></script>
+
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/js/form-validator.min.js"></script>
+    <script src="~/assets/js/contact-form-script.js"></script>
+
+    <script src="~/assets/js/swiper-bundle.min.js"></script>
+
+    <script src="~/assets/js/fslightbox.js"></script>
+
+    <script src="~/assets/js/countdown.js"></script>
+
+    <script src="~/assets/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

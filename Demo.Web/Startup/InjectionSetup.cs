@@ -6,6 +6,7 @@ using Demo.Application.Services;
 using Demo.Database;
 using Demo.Web.Helpers;
 using MongoDB.Driver;
+using Demo.Application.Services;
 
 namespace Demo.Web.Startup
 {
@@ -16,16 +17,16 @@ namespace Demo.Web.Startup
             //services.AddTransient<IEmailTemplate, EmailTemplate>();
             //services.AddTransient<IMailService, MailService>();
             services.AddTransient<ISystemParameters, SystemParameters>();
-            //services.AddTransient<IPaymentService, PaymentService>();
-            //services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<IOrderService, OrderService>();
             //services.AddTransient<IFileService, StorageAccount>();
             services.AddTransient<IUserGroupManager, UserGroupManager>();
 
             services.AddTransient<IUserRepository, UserRepository>();
             //services.AddTransient<INewsRepository, NewsRepository>();
             services.AddTransient<IUserGroupRepository, UserGroupRepository>();
-            //services.AddTransient<IOrderRepository, OrderRepository>();
-            //services.AddTransient<IPaymentRepository, PaymentRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IPaymentRepository, PaymentRepository>();
             //services.AddTransient<IContactRepository, ContactRepository>();
             //services.AddTransient<IVoucherRepository, VoucherRepository>();
             //services.AddTransient<IGeneralItemRepository, GeneralItemRepository>();

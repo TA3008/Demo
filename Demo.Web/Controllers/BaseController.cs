@@ -2,7 +2,7 @@
 
 namespace Demo.Web.Controllers
 {
-    public class BaseController : Controller
+    public class Demo : Controller
     {
         protected string GetModalStateErrorMsg()
         {

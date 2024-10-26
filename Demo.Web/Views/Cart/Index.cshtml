@@ -126,27 +126,40 @@
             $('#checkoutBtn').on('click', function () {
                 var selectedProductIds = [];
 
-                // Lấy danh sách sản phẩm đã chọn
+                // Collect selected product IDs from checkboxes that are checked
                 $('.checkbox-item:checked').each(function () {
                     selectedProductIds.push($(this).data('product-id'));
                 });
-                $.ajax({
-                    url: '/Order/Checkout',
-                    method: 'GET',
-                    data: {
-                        productIds: selectedProductIds.join(',')
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            window.location.href = '/Order/Checkout';
-                        } else {
-                            alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+
+                console.log('Selected Product IDs:', selectedProductIds);  // Debugging log
+
+                // If at least one course is selected, proceed to submit form via AJAX
+                if (selectedProductIds.length > 0) {
+                    // Make sure to stringify the selectedProductIds for transmission via AJAX
+                    var productIdsString = selectedProductIds.join(',');
+
+                    $.ajax({
+                        url: '@Url.Action("Checkout", "Order")',
+                        method: 'GET',
+                        dataType: 'html',
+                        data: {
+                            productIds: productIdsString
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $('#checkoutContainer').html(response);
+                            } else {
+                                alert('Checkout failed: ' + response.message);
+                            }
+                        },
+                        error: function () {
+                            alert('An error occurred while processing the checkout.');
                         }
-                    },
-                    error: function () {
-                        alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-                    }
-                });
+                    });
+                } else {
+                    alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+                    return false;
+                }
             });
 
         });

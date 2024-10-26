@@ -18,32 +18,33 @@
         </div>
 
         <!-- Form Order Details -->
-        <form id="orderForm" onsubmit="return false;">
+        <form asp-action="Checkout" method="post">
+            <input type="hidden" asp-for="ProductIds" />
             <div class="row">
                 <!-- Customer Information -->
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label for="customerName" class="span_bold">Tên khách hàng</label>
                         <input type="text" id="customerName" name="customerName" value="@Model.CustomerName"
-                               class="form-control" placeholder="Nhập tên của bạn" required>
+                            class="form-control" placeholder="Nhập tên của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="customerPhone" class="span_bold">Số điện thoại</label>
                         <input type="tel" id="customerPhone" name="customerPhone" value="@Model.CustomerPhone"
-                               class="form-control" placeholder="Nhập số điện thoại của bạn" required>
+                            class="form-control" placeholder="Nhập số điện thoại của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="customerEmail" class="span_bold">Email</label>
                         <input type="email" id="customerEmail" name="customerEmail" value="@Model.CustomerEmail"
-                               class="form-control" placeholder="Nhập email của bạn" required>
+                            class="form-control" placeholder="Nhập email của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="customerAddress" class="span_bold">Địa chỉ</label>
                         <input type="text" id="customerAddress" name="customerAddress" value="@Model.CustomerAddress"
-                               class="form-control" placeholder="Nhập địa chỉ của bạn" required>
+                            class="form-control" placeholder="Nhập địa chỉ của bạn" required>
                     </div>
                 </div>
 
@@ -70,7 +71,7 @@
                             }
                         </ul>
                         <span class="badge badge-primary badge-pill mt-2">
-                            Tổng tiền: @Model.CartItem.Sum(x => x.Price).ToString("#,##0 VND")
+                            <h5>Tổng tiền: <strong>@Model.CartItem.Sum(x => x.Price).ToString("#,##0 VND")</strong></h5>
                         </span>
                     </div>
 
@@ -89,9 +90,9 @@
 
             <!-- Submit Button -->
             <div class="row">
-                <div class="col-lg-12 text-right">
-                    <button class="organ_btn" type="submit">
-                        <i class="twi-arrow-right mr-5"></i>Hoàn thành
+                <div class="col-lg-12 text-center">
+                    <button class="button-checkout" type="submit">
+                        <span>Hoàn thành</span>
                     </button>
                 </div>
             </div>
@@ -99,30 +100,43 @@
     </div>
 </section>
 
-@* <script>
+@* @section Scripts {
+<script>
 $(document).ready(function () {
-$('#PaymentOption').on('change', function () {
-var val = $(this).val();
-var price = 0;
-var area = $("#GardenArea").val();
-if (val === '') {
-$("#paymentTypePrice").html("0");
-$("#paymentTypeDiscountPrice").attr("data-price", 0);
-$("#paymentTypeDiscountPrice").html("0");
-} else if (val == '@PaymentOption.OneMonth.GetHashCode()') {
-price = gardenPrice * area * 6;
-$("#paymentTypePrice").html(price.toLocaleString());
-price = price * 90 / 100;
-$("#paymentTypeDiscountPrice").attr("data-price", price);
-$("#paymentTypeDiscountPrice").html(price.toLocaleString());
-} else if (val == '@PaymentOption.ThreeMonths.GetHashCode()') {
-price = gardenPrice * area * 12;
-$("#paymentTypePrice").html(price.toLocaleString());
-price = price * 80 / 100;
-$("#paymentTypeDiscountPrice").attr("data-price", price);
-$("#paymentTypeDiscountPrice").html(price.toLocaleString());
+$(document).on("click", "#confirmCheckout", function () {
+CreateOrder();
+});
+
+function CreateOrder() {
+var paymentOption = $("#PaymentOption").val();
+if (paymentOption != '1' && paymentOption != '2') {
+@* toastr.error("Chưa chọn loại thanh toán!");
+return;
 }
-totalPrice();
+
+$('#loadingModal').modal();
+setTimeout(function () {
+var model = $("#frmOrder").serializeObject();
+var courses = [];
+$(".course:checked").each(function (index) {
+courses.push({
+'Id': $(this).attr("data-courseid")
 });
 });
-</script> *@
+var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Checkout", { model: model, productIds: courses });
+if (result && result.success) {
+$('#loadingModal').modal('hide');
+@* toastr.success("Đặt hàng thành công!");
+setTimeout(function () {
+window.location = "/Order/MyOrder";
+}, 1000);
+} else {
+$('#loadingModal').modal('hide');
+toastr.error(result.message);
+}
+}, 300);
+
+}
+});
+</script>
+} *@

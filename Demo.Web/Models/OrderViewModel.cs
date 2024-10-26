@@ -23,10 +23,11 @@ namespace Demo.Web.Models
         public string? CustomerPhone { get; set; }
         public string? CustomerNote { get; set; }
 
-        [Required(ErrorMessage = "Ảnh chụp màn hình thanh toán không được để trống")]
-        public string? VerifyImageUrl { get; set; }
+        // [Required(ErrorMessage = "Ảnh chụp màn hình thanh toán không được để trống")]
+        // public string? VerifyImageUrl { get; set; }
 
         public List<Course> CartItem { get; set; }
+        public string? ProductIds { get; set; }
 
         /// <summary>
         /// Mã voucher
@@ -36,9 +37,9 @@ namespace Demo.Web.Models
         /// <summary>
         /// Hình thức thanh toán
         /// </summary>
-        [Required(ErrorMessage = "Phải chọn hình thức thanh toán")]
-        [Range(1, 2, ErrorMessage = "Phải chọn hình thức thanh toán")]
-        public int PaymentOption { get; set; }
+        // [Required(ErrorMessage = "Phải chọn hình thức thanh toán")]
+        // [Range(1, 2, ErrorMessage = "Phải chọn hình thức thanh toán")]
+        // public int PaymentOption { get; set; }
 
         public IEnumerable<SelectListItem> PaymentOptions
         {

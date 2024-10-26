@@ -58,72 +58,50 @@ namespace Demo.Web.Controllers
         [HttpGet]
         public IActionResult Checkout(string productIds)
         {
-            // Kiểm tra nếu productIds có giá trị null hoặc rỗng
-            if (string.IsNullOrEmpty(productIds))
+            // Kiểm tra xem người dùng đã đăng nhập chưa
+            if (User?.Identity?.IsAuthenticated != true)
             {
-                // Trả về một trang lỗi thay vì Json
-                ViewBag.ErrorMessage = "Không có sản phẩm nào được chọn.";
-                return View("Error"); // Trang lỗi tùy chỉnh
+                return RedirectToAction("Login", "Account", new { returnUrl = "/Checkout" });
             }
 
-            try
+            var courses = new List<Course>();
+            if (!String.IsNullOrEmpty(productIds))
             {
-                // Tách productIds và đảm bảo chúng là các GUID hợp lệ
-                var courseIds = productIds.Split(',')
-                                          .Where(id => !string.IsNullOrWhiteSpace(id)) // Loại bỏ các id rỗng hoặc chứa khoảng trắng
-                                          .Select(id =>
-                                          {
-                                              Guid parsedId;
-                                              return Guid.TryParse(id.Trim(), out parsedId) ? parsedId : Guid.Empty; // Nếu không phải GUID hợp lệ, trả về Guid.Empty
-                                          })
-                                          .Where(guid => guid != Guid.Empty) // Loại bỏ các Guid.Empty không hợp lệ
-                                          .ToList();
-
-                if (!courseIds.Any())
+                try
                 {
-                    ViewBag.ErrorMessage = "Không có sản phẩm hợp lệ.";
-                    return View("Error");
+                    var courseIds = productIds.Split(',').Select(x => Guid.Parse(x)).ToList();
+                    courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList();
                 }
-
-                var courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList();
-
-                if (courses.Count == 0)
+                catch (FormatException)
                 {
-                    ViewBag.ErrorMessage = "Không tìm thấy sản phẩm nào.";
-                    return View("Error");
+                    return RedirectToAction("Cart"); // Điều hướng trở lại giỏ hàng nếu productIds không hợp lệ
                 }
-
-                var currentUser = _userRepository.GetByUsername(User.Identity.Name);
-                if (currentUser == null)
-                {
-                    ViewBag.ErrorMessage = "Người dùng không hợp lệ.";
-                    return View("Error");
-                }
-
-                var model = new OrderViewModel
-                {
-                    CustomerName = currentUser.UserName,
-                    CustomerPhone = currentUser.PhoneNumber,
-                    CustomerEmail = currentUser.Email,
-                    CartItem = courses
-                };
-
-                return View(model);
             }
-            catch (Exception ex)
+
+            if (courses.Count == 0)
             {
-                // Ghi log lỗi và trả về trang lỗi
-                Console.WriteLine($"Lỗi khi xử lý productIds: {ex.Message}");
-                ViewBag.ErrorMessage = "ProductIds không hợp lệ.";
-                return View("Error"); // Trang lỗi tùy chỉnh
+                return RedirectToAction("Cart"); // Điều hướng trở lại giỏ hàng nếu không có khóa học
             }
+
+            var model = new OrderViewModel();
+            var currentUser = _userRepository.GetByUsername(User.Identity.Name);
+            if (currentUser != null)
+            {
+                model.CustomerName = currentUser.FullName;
+                model.CustomerPhone = currentUser.PhoneNumber;
+                model.CustomerEmail = currentUser.Email;
+                model.CustomerAddress = currentUser.Address;
+                model.CartItem = courses;
+                model.ProductIds = productIds;
+            }
+
+            return View(model); // Hiển thị trang checkout với dữ liệu đã load
         }
-
-
 
         [HttpPost]
         public IActionResult Checkout(OrderViewModel model, string productIds)
         {
+            productIds = model.ProductIds;
             if (!ModelState.IsValid)
             {
                 string messages = base.GetModalStateErrorMsg();
@@ -151,35 +129,35 @@ namespace Demo.Web.Controllers
                 return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));
             }
 
-            long totalPrice = 0;
+            // long totalPrice = 0;
 
-            foreach (var course in courses)
-            {
-                if (model.PaymentOption == PaymentOption.OneMonth.GetHashCode())
-                {
-                    totalPrice += course.Price * (100 - 10) / 100;  // 10% discount for 1 month payment
-                }
-                else if (model.PaymentOption == PaymentOption.ThreeMonths.GetHashCode())
-                {
-                    totalPrice += course.Price * (100 - 15) / 100;  // 15% discount for 3 months payment
-                }
-            }
+            // foreach (var course in courses)
+            // {
+            //     if (model.PaymentOption == PaymentOption.OneMonth.GetHashCode())
+            //     {
+            //         totalPrice += course.Price * (100 - 10) / 100;  // 10% discount for 1 month payment
+            //     }
+            //     else if (model.PaymentOption == PaymentOption.ThreeMonths.GetHashCode())
+            //     {
+            //         totalPrice += course.Price * (100 - 15) / 100;  // 15% discount for 3 months payment
+            //     }
+            // }
 
             var order = new Order
             {
-                PaymentOption = (PaymentOption)model.PaymentOption,
+                // PaymentOption = (PaymentOption)model.PaymentOption,
                 Created = DateTimeExtensions.UTCNowVN,
                 CreatedBy = User?.Identity?.Name,
                 ModifiedBy = User?.Identity?.Name,
                 Modified = DateTimeExtensions.UTCNowVN,
-                Price = totalPrice,
+                Price = model.CartItem.Sum(x => x.Price),
                 Status = OrderStatus.Pending,
                 Username = User.Identity.Name,
                 CustomerAddress = model.CustomerAddress,
                 CustomerName = model.CustomerName,
                 CustomerPhone = model.CustomerPhone,
                 CustomerNote = model.CustomerNote,
-                VerifyImageUrl = model.VerifyImageUrl,
+                // VerifyImageUrl = model.VerifyImageUrl,
                 StatusHistories = new List<OrderStatusDetails>
         {
             new OrderStatusDetails
@@ -219,7 +197,7 @@ namespace Demo.Web.Controllers
             //    }
             //}
 
-            order.Price = totalPrice;
+            order.Price = model.CartItem.Sum(x => x.Price);
 
             // Save the order
             _orderRepository.UpsertAsync(order);

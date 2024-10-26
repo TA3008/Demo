@@ -52,35 +52,23 @@ namespace Demo.Web.Controllers
         [Route("api/cart/add")]
         public IActionResult AddToCart(Guid courseID)
         {
-            var database = _client.GetDatabase("Demo");
-            try
+            var user = _userRepository.GetByUsername(User.Identity.Name);
+            if (user == null)
             {
-                var user = _userRepository.GetByUsername(User.Identity.Name);
-                if (user == null)
-                {
-                    return Json(new { success = false });
-                }
-                if (user.CartItem.Any(c => c.Id == courseID))
-                {
-                    return Json(new { success = true });
-                }
-                var course = _courseRepository.Find(c => c.Id == courseID).SingleOrDefault();
-                if (course == null)
-                {
-                    return Json(new { success = false });
-                }
-                user.CartItem.Add(course);
-                var result = _userRepository.UpdateAsync(user);
-
-                if (result == null)
-                {
-                }
-                return Json(new { success = true });
+                return Json(new { success = false, message = "User not authenticated" });
             }
-            catch (Exception ex)
+            if (user.CartItem.Any(c => c.Id == courseID))
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = "Course already in cart" });
             }
+            var course = _courseRepository.Find(c => c.Id == courseID).SingleOrDefault();
+            if (course == null)
+            {
+                return Json(new { success = false, message = "Course not found" });
+            }
+            user.CartItem.Add(course);
+            _userRepository.UpdateAsync(user);
+            return Json(new { success = true, message = "Course added to cart successfully" });
         }
 
         // [HttpPost]
@@ -111,41 +99,26 @@ namespace Demo.Web.Controllers
 
         [HttpPost]
         [Route("api/cart/remove")]
-        public async Task<ActionResult> Remove(Guid courseID)
+        public async Task<IActionResult> Remove(Guid courseID)
         {
-            try
+            var user = _userRepository.GetByUsername(User.Identity.Name);
+            if (user == null)
             {
-                var user = _userRepository.GetByUsername(User.Identity.Name);
-                if (user == null)
-                {
-                    return Json(new { success = false, message = "User not found" });
-                }
-
-                // Remove course by its ID
-                var courseToRemove = user.CartItem.FirstOrDefault(c => c.Id == courseID);
-                if (courseToRemove != null)
-                {
-                    user.CartItem.RemoveAll(c => c.Id == courseID); // Remove by Id, not by object reference
-                    var result = await _userRepository.UpdateAsync(user); // Ensure this is awaited
-
-                    if (result != null)
-                    {
-                        return Json(new { success = true });
-                    }
-                    else
-                    {
-                        return Json(new { success = false });
-                    }
-                }
-                else
-                {
-                    return Json(new { success = false, message = "Course not found in cart" });
-                }
+                return Json(new { success = false, message = "User not authenticated" });
             }
-            catch (Exception ex)
+
+            var courseToRemove = user.CartItem.FirstOrDefault(c => c.Id == courseID);
+            if (courseToRemove == null)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = "Course not found in cart" });
             }
+
+            user.CartItem.Remove(courseToRemove);
+            var result = await _userRepository.UpdateAsync(user);
+
+            return result != null
+                ? Json(new { success = true, message = "Course removed successfully" })
+                : Json(new { success = false, message = "Error removing course" });
         }
     }
 }

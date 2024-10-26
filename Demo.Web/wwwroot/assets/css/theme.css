@@ -2,6 +2,7 @@
   width: 30px;
   height: 30px;
 }
+
 .cart-view {
   margin-top: 100px;
   /* Adjust this value as needed */
@@ -16,6 +17,7 @@
   border-radius: 10px;
   /* Optional: To smooth out the edges */
 }
+
 .has-children {
   position: relative;
   display: inline-block;
@@ -98,4 +100,55 @@
 .cart-icon {
   margin-left: 10px;
   cursor: pointer;
+}
+
+.button-checkout {
+  display: inline-block;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.4s ease;
+  box-shadow: 0px 10px 20px rgba(110, 142, 251, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.button-checkout:hover {
+  color: #6e8efb;
+  background: #fff;
+  box-shadow: 0px 15px 25px rgba(110, 142, 251, 0.5);
+}
+
+.button-checkout::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(110, 142, 251, 0.3);
+  transition: width 0.6s ease, height 0.6s ease, top 0.6s ease, left 0.6s ease;
+  border-radius: 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.button-checkout:hover::before {
+  width: 0;
+  height: 0;
+  opacity: 1;
+}
+
+.button-checkout span {
+  position: relative;
+  z-index: 1;
 }

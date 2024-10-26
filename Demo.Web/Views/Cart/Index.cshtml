@@ -36,7 +36,8 @@
                         var item = Model[i];
                         <tr>
                             <td>
-                                <input type="checkbox" class="checkbox-item" data-product-id="@item.Id" data-price="@item.Price" />
+                                <input type="checkbox" class="checkbox-item" data-product-id="@item.Id"
+                                    data-price="@item.Price" />
                             </td>
                             <td>@(i + 1)</td>
                             <td>@item.Title</td>
@@ -56,12 +57,12 @@
                 <h4>Total: <span class="total-amount">@Model.Sum(item => item.Price).ToString("#,##0") VNĐ</span></h4>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a href="" class="btn btn-success" id="checkoutBtn">Thanh toán</a>
+                    <a class="btn btn-success" id="checkoutBtn">Thanh toán</a>
                 }
                 else
                 {
                     <a href="@Url.Action("Login", "Account", new { returnUrl = "/checkout.html" })" class="btn btn-primary"
-                       id="checkoutBtn">
+                        id="checkoutBtn">
                         Đăng
                         nhập để thanh toán
                     </a>
@@ -125,43 +126,17 @@
 
             $('#checkoutBtn').on('click', function () {
                 var selectedProductIds = [];
-
-                // Collect selected product IDs from checkboxes that are checked
                 $('.checkbox-item:checked').each(function () {
                     selectedProductIds.push($(this).data('product-id'));
                 });
-
-                console.log('Selected Product IDs:', selectedProductIds);  // Debugging log
-
-                // If at least one course is selected, proceed to submit form via AJAX
                 if (selectedProductIds.length > 0) {
-                    // Make sure to stringify the selectedProductIds for transmission via AJAX
                     var productIdsString = selectedProductIds.join(',');
-
-                    $.ajax({
-                        url: '@Url.Action("Checkout", "Order")',
-                        method: 'GET',
-                        dataType: 'html',
-                        data: {
-                            productIds: productIdsString
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                $('#checkoutContainer').html(response);
-                            } else {
-                                alert('Checkout failed: ' + response.message);
-                            }
-                        },
-                        error: function () {
-                            alert('An error occurred while processing the checkout.');
-                        }
-                    });
+                    // Điều hướng đến trang Checkout kèm productIds trong query string
+                    window.location.href = '/Order/Checkout?productIds=' + encodeURIComponent(productIdsString);
                 } else {
                     alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-                    return false;
                 }
             });
-
         });
     </script>
 }

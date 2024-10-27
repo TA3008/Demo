@@ -26,25 +26,25 @@
                     <div class="form-group">
                         <label for="customerName" class="span_bold">Tên khách hàng</label>
                         <input type="text" id="customerName" name="customerName" value="@Model.CustomerName"
-                            class="form-control" placeholder="Nhập tên của bạn" required>
+                               class="form-control" placeholder="Nhập tên của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="customerPhone" class="span_bold">Số điện thoại</label>
                         <input type="tel" id="customerPhone" name="customerPhone" value="@Model.CustomerPhone"
-                            class="form-control" placeholder="Nhập số điện thoại của bạn" required>
+                               class="form-control" placeholder="Nhập số điện thoại của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="customerEmail" class="span_bold">Email</label>
                         <input type="email" id="customerEmail" name="customerEmail" value="@Model.CustomerEmail"
-                            class="form-control" placeholder="Nhập email của bạn" required>
+                               class="form-control" placeholder="Nhập email của bạn" required>
                     </div>
 
                     <div class="form-group">
                         <label for="customerAddress" class="span_bold">Địa chỉ</label>
                         <input type="text" id="customerAddress" name="customerAddress" value="@Model.CustomerAddress"
-                            class="form-control" placeholder="Nhập địa chỉ của bạn" required>
+                               class="form-control" placeholder="Nhập địa chỉ của bạn" required>
                     </div>
                 </div>
 
@@ -53,17 +53,32 @@
                     <div class="form-group text-center">
                         <h3><label class="span_bold">Sản phẩm đã đặt mua</label></h3>
                         <ul id="orderedProducts" class="list-group">
-                            @if (Model != null && Model.CartItem != null && Model.CartItem.Count > 0)
+                            @if (Model != null && Model.Courses != null && Model.Courses.Count > 0)
                             {
-                                @foreach (var item in Model.CartItem)
-                                {
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong>SP @(Model.CartItem.IndexOf(item) + 1): </strong>@item.Title
-                                        </div>
-                                        <span class="badge badge-primary badge-pill">@item.Price.ToString("#,##0 VND")</span>
-                                    </li>
-                                }
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Số thứ tự</th>
+                                            <th scope="col">Tên sản phẩm</th>
+                                            <th scope="col">Hình ảnh</th>
+                                            <th scope="col">Giá tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Courses)
+                                        {
+                                            <tr>
+                                                <td>@(Model.Courses.IndexOf(item) + 1)</td>
+                                                <td>@item.Title</td>
+                                                <td>
+                                                    <img src="@item.Thumb" alt="@item.Title" style="width: 100px; height: auto;">
+                                                </td>
+                                                <td>@item.Price.ToString("#,##0 VND")</td>
+                                            </tr>
+                                            <input type="hidden" name="CourseIds" value="@item.Id" />
+                                        }
+                                    </tbody>
+                                </table>
                             }
                             else
                             {
@@ -71,7 +86,7 @@
                             }
                         </ul>
                         <span class="badge badge-primary badge-pill mt-2">
-                            <h5>Tổng tiền: <strong>@Model.CartItem.Sum(x => x.Price).ToString("#,##0 VND")</strong></h5>
+                            <h5>Tổng tiền: <strong>@Model.Courses.Sum(x => x.Price).ToString("#,##0 VND")</strong></h5>
                         </span>
                     </div>
 
@@ -83,10 +98,12 @@
 
                     <div class="form-group">
                         <label class="span_bold">Tổng số tiền phải thanh toán</label>
-                        <p id="totalAmount" class="green">@Model.CartItem.Sum(item => item.Price).ToString("C")</p>
+                        <p id="totalAmount" class="green">@Model.Courses.Sum(item => item.Price).ToString("C")</p>
                     </div>
                 </div>
             </div>
+
+            <input type="hidden" asp-for="ProductIds" />
 
             <!-- Submit Button -->
             <div class="row">
@@ -100,43 +117,42 @@
     </div>
 </section>
 
-@* @section Scripts {
-<script>
-$(document).ready(function () {
-$(document).on("click", "#confirmCheckout", function () {
-CreateOrder();
-});
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(document).on("click", "#confirmCheckout", function () {
+                CreateOrder();
+            });
 
-function CreateOrder() {
-var paymentOption = $("#PaymentOption").val();
-if (paymentOption != '1' && paymentOption != '2') {
-@* toastr.error("Chưa chọn loại thanh toán!");
-return;
-}
+            function CreateOrder() {
+                var paymentOption = $("#PaymentOption").val();
+                if (paymentOption != '1' && paymentOption != '2') {
+                    alert("Chưa chọn loại thanh toán!");
+                    return;
+                }
 
-$('#loadingModal').modal();
-setTimeout(function () {
-var model = $("#frmOrder").serializeObject();
-var courses = [];
-$(".course:checked").each(function (index) {
-courses.push({
-'Id': $(this).attr("data-courseid")
-});
-});
-var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Checkout", { model: model, productIds: courses });
-if (result && result.success) {
-$('#loadingModal').modal('hide');
-@* toastr.success("Đặt hàng thành công!");
-setTimeout(function () {
-window.location = "/Order/MyOrder";
-}, 1000);
-} else {
-$('#loadingModal').modal('hide');
-toastr.error(result.message);
+                $('#loadingModal').modal();
+                setTimeout(function () {
+                    var model = $("#frmOrder").serializeObject();
+                    var courses = [];
+                    $(".course:checked").each(function (index) {
+                        courses.push({
+                            'Id': $(this).attr("data-courseid")
+                        });
+                    });
+                    var result = ajaxHelper.excutePostAjax_ReturnDataJson("/Order/Checkout", { model: model, productIds: courses });
+                    if (result && result.success) {
+                        $('#loadingModal').modal('hide');
+                        alert("Đặt hàng thành công!");
+                        setTimeout(function () {
+                            window.location = "/Order/MyOrder";
+                        }, 1000);
+                    } else {
+                        $('#loadingModal').modal('hide');
+                        alert(result.message);
+                    }
+                }, 300);
+            }
+        });
+    </script>
 }
-}, 300);
-
-}
-});
-</script>
-} *@

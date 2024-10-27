@@ -26,7 +26,7 @@ namespace Demo.Web.Models
         // [Required(ErrorMessage = "Ảnh chụp màn hình thanh toán không được để trống")]
         // public string? VerifyImageUrl { get; set; }
 
-        public List<Course> CartItem { get; set; }
+        public List<Course>? Courses { get; set; }
         public string? ProductIds { get; set; }
 
         /// <summary>

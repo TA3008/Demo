@@ -91,7 +91,7 @@ namespace Demo.Web.Controllers
                 model.CustomerPhone = currentUser.PhoneNumber;
                 model.CustomerEmail = currentUser.Email;
                 model.CustomerAddress = currentUser.Address;
-                model.CartItem = courses;
+                model.Courses = courses;
                 model.ProductIds = productIds;
             }
 
@@ -99,9 +99,8 @@ namespace Demo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Checkout(OrderViewModel model, string productIds)
+        public IActionResult Checkout(OrderViewModel model, List<Guid> CourseIds)
         {
-            productIds = model.ProductIds;
             if (!ModelState.IsValid)
             {
                 string messages = base.GetModalStateErrorMsg();
@@ -114,16 +113,13 @@ namespace Demo.Web.Controllers
             }
 
             // Ensure the product IDs are not empty
-            if (string.IsNullOrEmpty(productIds))
+            if (CourseIds == null || !CourseIds.Any())
             {
                 return Json(new JsonReturn(false, "Vui lòng chọn ít nhất một sản phẩm để thanh toán."));
             }
 
-            // Split the productIds string to a list of GUIDs
-            var courseIds = productIds.Split(',').Select(Guid.Parse).ToList();
-
             // Fetch the selected courses from the repository
-            var courses = _courseRepository.Find(x => courseIds.Contains(x.Id)).ToList();
+            var courses = _courseRepository.Find(x => CourseIds.Contains(x.Id)).ToList();
             if (!courses.Any())
             {
                 return Json(new JsonReturn(false, "Có lỗi xảy ra với khoá học đã chọn, vui lòng thử lại."));
@@ -143,34 +139,39 @@ namespace Demo.Web.Controllers
             //     }
             // }
 
-            var order = new Order
+            var order = new Order();
+            // Gán các thuộc tính của Order
+            order.Created = DateTimeExtensions.UTCNowVN;
+            order.CreatedBy = User?.Identity?.Name;
+            order.ModifiedBy = User?.Identity?.Name;
+            order.Modified = DateTimeExtensions.UTCNowVN;
+            order.Price = courses.Sum(x => x.Price);
+            order.Status = OrderStatus.Pending;
+            order.Username = User.Identity.Name;
+            order.CustomerAddress = model.CustomerAddress;
+            order.CustomerName = model.CustomerName;
+            order.CustomerPhone = model.CustomerPhone;
+            //order.CustomerNote = model.CustomerNote;
+            //order.VerifyImageUrl = model.VerifyImageUrl;
+            order.StatusHistories = new List<OrderStatusDetails>
             {
-                // PaymentOption = (PaymentOption)model.PaymentOption,
-                Created = DateTimeExtensions.UTCNowVN,
-                CreatedBy = User?.Identity?.Name,
-                ModifiedBy = User?.Identity?.Name,
-                Modified = DateTimeExtensions.UTCNowVN,
-                Price = model.CartItem.Sum(x => x.Price),
-                Status = OrderStatus.Pending,
-                Username = User.Identity.Name,
-                CustomerAddress = model.CustomerAddress,
-                CustomerName = model.CustomerName,
-                CustomerPhone = model.CustomerPhone,
-                CustomerNote = model.CustomerNote,
-                // VerifyImageUrl = model.VerifyImageUrl,
-                StatusHistories = new List<OrderStatusDetails>
-        {
-            new OrderStatusDetails
-            {
-                ActionTime = DateTimeExtensions.UTCNowVN,
-                Status = OrderStatus.Pending,
-                Author = User?.Identity?.Name
-            }
-        },
-                Code = User.Identity.Name.Length > 4
-                    ? User.Identity.Name.Substring(0, 4) + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss")
-                    : User.Identity.Name.Length + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss")
+                new OrderStatusDetails
+                {
+                    ActionTime = DateTimeExtensions.UTCNowVN,
+                    Status = OrderStatus.Pending,
+                    Author = User?.Identity?.Name
+                }
             };
+            order.Code = User.Identity.Name.Length > 4
+                ? User.Identity.Name.Substring(0, 4) + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss")
+                : User.Identity.Name.Length + DateTimeExtensions.UTCNowVN.ToString("yyMMddHHmmss");
+            if (courses.Any())
+            {
+                foreach (var course in courses)
+                {
+                    order.Courses.Add(course);
+                }
+            }
 
             // Handle voucher logic
             //if (!string.IsNullOrEmpty(model.VoucherCode))
@@ -197,7 +198,7 @@ namespace Demo.Web.Controllers
             //    }
             //}
 
-            order.Price = model.CartItem.Sum(x => x.Price);
+            order.Price = courses.Sum(x => x.Price);
 
             // Save the order
             _orderRepository.UpsertAsync(order);

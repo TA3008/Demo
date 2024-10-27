@@ -52,6 +52,10 @@ namespace Demo.Core.Models
                 yield return new(item, item.GetEnumDescription());
             }
         }
+        public string GetCourseNames()
+        {
+            return string.Join(", ", Courses.Select(c => c.Title));
+        }
     }
 
     public class OrderDetails

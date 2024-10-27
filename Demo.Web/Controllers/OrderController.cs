@@ -206,7 +206,9 @@ namespace Demo.Web.Controllers
             // Send email notification
             //_mailService.OrderStatusChanged(order);
 
-            return Json(new JsonReturn(true, "Đặt hàng thành công!"));
+            // return Json(new JsonReturn(true, "Đặt hàng thành công!"));
+            TempData["OrderSuccessMessage"] = "Đặt hàng thành công!";
+            return RedirectToAction("MyOrder");
         }
 
 

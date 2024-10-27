@@ -1,80 +1,57 @@
 @using Demo.Core.Models;
-@using EnumsNET;
+@using EnumsNET
 @model List<Order>
 
-<!-- Begin:: Banner Section -->
-<section class="page_banner shop_banner" style="background-image: url(/assets/images/bg/b3.jpg); margin-top: 120px;">
-    <div class="container largeContainer">
-        <div class="row">
-            <div class="col-lg-12 text-left">
-                <p class="breadcrumbs">
-                    <a href="/"><i class="twi-home"></i>Trang chủ</a><i class="twi-angle-right"></i>Đơn hàng của tôi
-                </p>
+<section class="order-confirmation">
+    <div class="container">
+        @if (Model?.Any() == true)
+        {
+            <div class="confirmation-message">
+                <p>Đặt hàng thành công!</p>
             </div>
-        </div>
+            <h2 class="order-history-title">Lịch sử đơn hàng của bạn</h2>
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã đơn hàng</th>
+                        <th>Khoá học</th>
+                        <th>Ngày tạo</th>
+                        <th>Thanh toán</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr class="order-row">
+                            <td>@(i + 1)</td>
+                            <td>@Model[i].Code</td>
+                            <td>@Model[i].GetCourseNames()</td>
+                            <td>@Model[i].Created.ToString("dd/MM/yyyy")</td>
+                            <td>@Model[i].Price.ToString("N0") VND</td>
+                            <td>@Model[i].Status.AsString(EnumFormat.Description)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Không có đơn hàng nào!</p>
+        }
     </div>
 </section>
 
-
-<section class="cartPage">
-    <div class="container largeContainer containerTable">
-        <div class="row">
-            <div class="col-lg-12 colTable">
-                @if (Model?.Any() == true)
-                {
-                    <div class="woocommerce pd-0">
-                        <h2>Thank You for Your Order!</h2>
-                        <table class="shop_table">
-                            <thead>
-                                <tr>
-                                    <th class="product-remove">&nbsp;</th>
-                                    <th class="product-remove">Mã đơn hàng</th>
-                                    <th class="product-name">Khoá học</th>
-                                    <th class="product-quantity">Ngày tạo</th>
-                                    <th class="product-price">Thanh toán</th>
-                                    <th class="product-subtotal">Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Count; i++)
-                                {
-                                    <tr class="cart_item">
-                                        <td class="product-remove">
-                                            @(i + 1)
-                                        </td>
-                                        <td class="garden">
-                                            <p class="mobile">Mã đơn hàng: </p>
-                                            <p>@Model[i].Code</p>
-                                        </td>
-@*                                         <td class="garden">
-                                            <p class="mobile">Khoá học: </p>
-                                            <p>@Model[i].Courses.Title</p><br />
-                                        </td> *@
-                                        <td class="garden">
-                                            <p class="mobile">Ngày tạo: </p>
-                                            <p>@Model[i].Created.ToString("dd/MM/yyyy")</p>
-                                        </td>
-                                        <td class="garden">
-                                            <p class="mobile">Giá: </p>
-                                            <p>@Model[i].Price.ToString("N0")</p>
-                                            <p>vnd</p>
-                                        </td>
-                                        <td class="garden product-subtotal">
-                                            <p class="mobile">Trạng thái: </p>
-                                            <p class="woocommerce-Price-amount amount">
-                                                @Model[i].Status.AsString(EnumFormat.Description)</p>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p>Không có đơn hàng nào!</p>
-                }
-            </div>
-        </div>
-    </div>
-</section>
+<style>
+    .confirmation-message {
+        background-color: #2d6a4f;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>

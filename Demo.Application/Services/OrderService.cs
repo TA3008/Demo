@@ -37,17 +37,20 @@ namespace Demo.Application.Services
 
         List<Order> IOrderService.GetOrdersByUsername(string username)
         {
-            throw new NotImplementedException();
+            return _orderRepository.Find(x => x.Username == username).ToList();
         }
 
         List<Order> IOrderService.GetActiveOrdersByUsername(string username)
         {
-            throw new NotImplementedException();
+            return _orderRepository.Find(x => x.Username == username && x.Status == OrderStatus.Active).ToList();
         }
 
         List<Order> IOrderService.GetActivePendingPaidOrdersByUsername(string username)
         {
-            throw new NotImplementedException();
+            return _orderRepository.Find(x => x.Username == username &&
+                                          (x.Status == OrderStatus.Active ||
+                                           x.Status == OrderStatus.Pending ||
+                                           x.Status == OrderStatus.Paid)).ToList();
         }
     }
 }

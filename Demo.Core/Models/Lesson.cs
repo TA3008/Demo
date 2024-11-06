@@ -13,7 +13,7 @@ namespace Demo.Core.Models
         public string Description { get; set; }
 
         [Display(Name = "Khoá học")]
-        public Course Course { get; set; }
+        public Course course { get; set; }
 
         [Display(Name = "Video")]
         public string YouTubeUrl { get; set; }

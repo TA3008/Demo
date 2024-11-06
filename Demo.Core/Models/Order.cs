@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Demo.Core.ValueObjects;
 using Demo.Common.Extensions;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Demo.Core.Models
 {
@@ -28,6 +29,7 @@ namespace Demo.Core.Models
         public string? CustomerAddress { get; set; }
 
         public Guid? SaleId { get; set; }
+        public string? SaleEmail { get; set; }
 
         [Required(ErrorMessage = "Ảnh xác thực chuyển khoản không được để trống")]
         public string VerifyImageUrl { get; set; }
@@ -40,7 +42,8 @@ namespace Demo.Core.Models
 
         [Required(ErrorMessage = "Nội dung thanh toán không được để trống")]
         public string PaymentContent { get; set; }
-        public List<Course> Courses { get; set; } = new List<Course>();
+        [BsonElement("Courses")]
+        public List<Course> courses { get; set; } = new List<Course>();
         //public Voucher Voucher { get; set; } = new Voucher();
         public PaymentOption PaymentOption { get; set; }
 
@@ -54,15 +57,9 @@ namespace Demo.Core.Models
         }
         public string GetCourseNames()
         {
-            return string.Join(", ", Courses.Select(c => c.Title));
+            return courses != null && courses.Any()
+                ? string.Join(", ", courses.Select(c => c.Title))
+                : "No courses registered";
         }
-    }
-
-    public class OrderDetails
-    {
-        public string CourseId { get; set; }
-        public string CourseTitle { get; set; }
-        public string Thumb { get; set; }
-        public long Price { get; set; }
     }
 }

@@ -23,12 +23,12 @@
                     
                     @if (!Model.IsExternalLogin)
                     {
-                        <li><h4><a href="/accounts/changepassword">Đổi mật khẩu</a></h4></li>
+                        <li><h4><a href="/account/changepassword">Đổi mật khẩu</a></h4></li>
                     }
 
                     <li>
                         <h4><a href="javascript:void(0)" onclick="$('#logoutForm').submit()">Thoát</a></h4>
-                        <form method="post" enctype="multipart/form-data" asp-controller="Accounts" asp-action="Logout" asp-area=""
+                        <form method="post" enctype="multipart/form-data" asp-controller="Account" asp-action="Logout" asp-area=""
                             id="logoutForm" class="hidden"></form>
                     </li>
                 </ul>
@@ -46,6 +46,6 @@
     }
     else
     {
-        <a href="/accounts/login" class="link style3">Login/Register</a>
+        <a href="/account/login" class="link style3">Login/Register</a>
     }
 }

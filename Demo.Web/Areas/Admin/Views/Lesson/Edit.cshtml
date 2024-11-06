@@ -1,0 +1,155 @@
+@using Demo.Core.Models
+@using Demo.Web.Extensions
+@model Lesson
+
+@{
+    ViewData["Title"] = "Thiết lập Bài giảng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var courses = ViewBag.Courses as List<Demo.Core.Models.Course>;
+}
+
+<div class="card mt-2 mb-2 shadow-base">
+    <div class="card-body pb-0">
+        <form method="post" enctype="multipart/form-data" asp-controller="Lesson" asp-action="Edit" id="editForm">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.Created)
+            @Html.HiddenFor(m => m.CreatedBy)
+            @Html.HiddenFor(m => m.Thumb)
+            @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <p>Model ID: @Model.Id</p>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.Title) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.Title, new
+                        {
+                            Class = "form-control form-control-smy",
+                            required = "required"
+                        })
+                </div>
+            </div>
+            @* <div class="row">
+            <div class="form-group">
+            @Html.LabelFor(m => m.Thumb)
+            <input name="fThumb" id="fThumb" type="file" class="form-control-file" asp-for="Thumb">
+            <span asp-validation-for="Thumb" class="text-danger"></span>
+            <!-- Image preview -->
+            @if (System.Text.RegularExpressions.Regex.IsMatch(@Model.Thumb, @"^https://"))
+            {
+            <img id="preview-img"
+            src="@(!string.IsNullOrEmpty(Model.Thumb) ? Url.Content(Model.Thumb) : "/images/placeholder.png")"
+            alt="Preview" style="max-width: 500px; margin-top: 10px;" />
+            }
+            else
+            {
+            <img id="preview-img"
+            src="@(!string.IsNullOrEmpty(Model.Thumb) ? Url.Content("~/images/Lessons/" + Model.Thumb) :
+            "/images/placeholder.png")"
+            alt="Preview" style="max-width: 500px; margin-top: 10px;" />
+            }
+
+            </div>
+            </div> *@
+            <div class="form-group">
+                @Html.LabelFor(m => m.YouTubeUrl)
+                <input type="text" class="form-control" asp-for="YouTubeUrl" id="youtube-url">
+            </div>
+            <div class="form-group">
+                <label class="font-weight-semibold">Preview</label>
+                <div id="youtube-preview">
+                    <!-- Video preview iframe will be inserted here -->
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.course)
+                    <select class="form-control" id="courseSelection" name="CourseId">
+                        @if (Model.course?.Title != null)
+                        {
+                            <!-- Display the selected course -->
+                            <option value="@Model.course.Id" selected>@Model.course.Title</option>
+
+                            <!-- Display the list of courses, excluding the selected one -->
+                            @foreach (var course in courses)
+                            {
+                                @if (course.Id != Model.course.Id)
+                                {
+                                    <option value="@course.Id">@course.Title</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <!-- Display "Select a Course" if no course is selected -->
+                            <option value="">-- Chọn khóa học --</option>
+                            @foreach (var course in courses)
+                            {
+                                <option value="@course.Id" selected="@(Model.course?.Id == course.Id ? "selected" : null)">
+                                    @course.Title
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Description) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Description, new
+                        {
+                            Class = "form-control form-control-smy h-100",
+                            required =
+                             "required"
+                        })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(x => x.Active) &nbsp;
+                    @Html.CheckBoxFor(m => m.Active)
+                </div>
+            </div>
+            <hr />
+            <div class="mb-2">
+                <button class="btn btn-success" type="button" onclick="$('#editForm').submit()">Lưu</button>
+                <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script>
+        common.initTinyMce('#Content');
+
+        $("#fThumb").change(function () {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#preview-img').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        });
+
+        $('#youtube-url').on('input', function () {
+            var url = $(this).val();
+            var videoId = extractYouTubeVideoId(url);
+            if (videoId) {
+                var iframeHtml = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe>';
+                $('#youtube-preview').html(iframeHtml);
+            } else {
+                $('#youtube-preview').html('<span>Invalid YouTube URL</span>');
+            }
+        });
+
+        function extractYouTubeVideoId(url) {
+            var regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            var match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        $('#youtube-url').trigger('input');
+    </script>
+}

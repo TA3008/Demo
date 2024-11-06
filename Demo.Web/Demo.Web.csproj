@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Demo.Core\Demo.Core.csproj" />
     <ProjectReference Include="..\Demo.Database\Demo.Database.csproj" />
     <ProjectReference Include="..\Demo.Infrastructure.Mail\Demo.Infrastructure.Mail.csproj" />
+    <ProjectReference Include="..\Demo.Infrastructure.File\Demo.Infrastructure.File.csproj" />
   </ItemGroup>
 
   <ItemGroup>

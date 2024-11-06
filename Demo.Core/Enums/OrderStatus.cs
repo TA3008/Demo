@@ -16,10 +16,7 @@ namespace Demo.Core.ValueObjects
         [Description("Đã duyệt")]
         Paid = 30,
 
-        [Description("Đang hoạt động")]
-        Active = 40,
-
         [Description("Đã hết hạn")]
-        Expired = 50
+        Expired = 40
     }
 }

@@ -169,7 +169,7 @@ namespace Demo.Web.Controllers
             {
                 foreach (var course in courses)
                 {
-                    order.Courses.Add(course);
+                    order.courses.Add(course);
                 }
             }
 

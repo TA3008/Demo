@@ -15,7 +15,8 @@ namespace Demo.Core.Models
         public string Thumb { get; set; }
 
         [Display(Name = "Khoá học")]
-        public string Course { get; set; }
+        public Course course { get; set; }
+        public Lesson lesson { get; set; }
 
         [Display(Name = "Môn học")]
         public string Lesson { get; set; }

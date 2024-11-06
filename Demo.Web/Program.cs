@@ -68,7 +68,7 @@ defaults: new { controller = "Orders", action = "MyCourses" });
 app.MapControllerRoute(
     name: "thongtincuatoi",
     pattern: FriendlyUrl.MyProfileFrUrl,
-    defaults: new { controller = "Accounts", action = "MyProfile" });
+    defaults: new { controller = "Account", action = "MyProfile" });
 
 app.MapControllerRoute(
     name: "muakhoahoc",

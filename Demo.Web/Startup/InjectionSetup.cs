@@ -4,9 +4,10 @@ using Demo.Core.Services;
 using Demo.Database.Repositories;
 using Demo.Application.Services;
 using Demo.Database;
-using Demo.Web.Helpers;
 using MongoDB.Driver;
-using Demo.Application.Services;
+using Demo.Infrastructure.File;
+using Demo.Infrastructure.Mail;
+using Demo.Web.Helpers;
 
 namespace Demo.Web.Startup
 {
@@ -14,12 +15,12 @@ namespace Demo.Web.Startup
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, ConfigurationManager configuration)
         {
-            //services.AddTransient<IEmailTemplate, EmailTemplate>();
-            //services.AddTransient<IMailService, MailService>();
+            services.AddTransient<IEmailTemplate, EmailTemplate>();
+            services.AddTransient<IMailService, MailService>();
             services.AddTransient<ISystemParameters, SystemParameters>();
             services.AddTransient<IPaymentService, PaymentService>();
             services.AddTransient<IOrderService, OrderService>();
-            //services.AddTransient<IFileService, StorageAccount>();
+            services.AddTransient<IFileService, StorageAccount>();
             services.AddTransient<IUserGroupManager, UserGroupManager>();
 
             services.AddTransient<IUserRepository, UserRepository>();

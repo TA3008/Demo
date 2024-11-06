@@ -303,18 +303,18 @@
                     </div>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <a id="add-to-cart" class="btn v3">Add to cart</a>
-                        <input hidden asp-for="Id" />
+                            <a id="add-to-cart" class="btn v3">Add to cart</a>
+                            <input hidden asp-for="Id" />
                         @* <input id="txtQuantity" name="txtQuantity" value="1" type="text"> *@
-                        <hr />
-                        <a href="javascript:void(0)" class="btn v3">Enroll</a>
+                            <hr />
+                            <a href="javascript:void(0)" class="btn v3">Enroll</a>
                     }
                     else
                     {
-                        <a href="~/accounts/login" class="btn"><img src="~/assets/img/wishlist.png" alt="@Model.Title"></a>
-                        <a href="~/accounts/login" class="btn v3">Add to Cart</a>
-                        <hr />
-                        <a href="~/accounts/login" class="btn v3">Enroll</a>
+                            <a href="~/account/login" class="btn"><img src="~/assets/img/wishlist.png" alt="@Model.Title"></a>
+                            <a href="~/account/login" class="btn v3">Add to Cart</a>
+                            <hr />
+                            <a href="~/account/login" class="btn v3">Enroll</a>
                     }
                 </div>
             </div>
@@ -420,38 +420,38 @@
 </section>
 
 @section Scripts {
-    <script>
-        $(document).ready(function () {
-            $(function () {
-                $("#add-to-cart").click(function () {
-                    var courseId = $('#Id').val();
-                    $.ajax({
+        <script>
+            $(document).ready(function () {
+                $(function () {
+                    $("#add-to-cart").click(function () {
+                        var courseId = $('#Id').val();
+                        $.ajax({
 
-                        url: '/api/cart/add',
-                        type: "POST",
-                        dataType: "JSON",
-                        data: {
-                            courseID: courseId
-                        },
-                        success: function (response) {
+                            url: '/api/cart/add',
+                            type: "POST",
+                            dataType: "JSON",
+                            data: {
+                                courseID: courseId
+                            },
+                            success: function (response) {
 
-                            loadHeaderCart(); // Add Product sucsess
-                            location.reload();
-                        },
-                        error: function (error) {
-                            alert("Lỗi: Không thể thêm sản phẩm vào giỏ hàng");
-                        }
+                                loadHeaderCart(); // Add Product sucsess
+                                location.reload();
+                            },
+                            error: function (error) {
+                                alert("Lỗi: Không thể thêm sản phẩm vào giỏ hàng");
+                            }
+                        });
                     });
                 });
+
+                function loadHeaderCart() {
+                    $("#miniCart").load("/AjaxContent/HeaderCart");
+                }
+
+                function loadHeaderWishList() {
+                    $("#numberWishList").load("/AjaxContent/NumberWishList");
+                }
             });
-
-            function loadHeaderCart() {
-                $("#miniCart").load("/AjaxContent/HeaderCart");
-            }
-
-            function loadHeaderWishList() {
-                $("#numberWishList").load("/AjaxContent/NumberWishList");
-            }
-        });
-    </script>
+        </script>
 }

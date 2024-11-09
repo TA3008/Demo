@@ -32,7 +32,7 @@ namespace Demo.Core.Models
         public string? SaleEmail { get; set; }
 
         [Required(ErrorMessage = "Ảnh xác thực chuyển khoản không được để trống")]
-        public string VerifyImageUrl { get; set; }
+        public string? VerifyImageUrl { get; set; }
 
         public DateTime IssuedDate { get; set; }
         public DateTime ExpiredDate { get; set; }

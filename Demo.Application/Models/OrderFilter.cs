@@ -9,7 +9,7 @@ namespace Demo.Application.Models
         public OrderStatus? OrderStatus { get; set; }
         public PaymentState? PaymentState { get; set; }
         public string? Code { get; set; }
-        public List<string> CourseTitles { get; set; }
+        public string? courses { get; set; }
         public DateTime? CreatedFrom { get; set; }
         public DateTime? CreatedTo { get; set; }
     }

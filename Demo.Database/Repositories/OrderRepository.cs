@@ -20,11 +20,9 @@ namespace Demo.Database.Repositories
             if (!string.IsNullOrWhiteSpace(filter.Code))
                 filterDefinition &= builder.Eq(m => m.Code, filter.Code.Trim());
 
-            if (filter.CourseTitles != null && filter.CourseTitles.Count > 0)
+            if (!string.IsNullOrWhiteSpace(filter.courses))
             {
-                var courseFilters = filter.CourseTitles
-                    .Select(title => builder.ElemMatch(m => m.courses, c => c.Title == title));
-                filterDefinition &= builder.Or(courseFilters);
+                filterDefinition &= builder.Regex(m => m.GetCourseNames(), new BsonRegularExpression($"{filter.courses.Trim()}", "i"));
             }
 
             if (filter.OrderStatus.HasValue)

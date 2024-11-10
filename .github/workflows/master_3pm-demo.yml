@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - 3PM-Demo
 on:
   push:
     branches:
-      - master
+      - Azure-deployment
   workflow_dispatch:
 
 jobs:

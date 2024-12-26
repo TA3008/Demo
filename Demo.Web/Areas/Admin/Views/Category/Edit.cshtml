@@ -1,0 +1,133 @@
+﻿@using Demo.Core.Models
+@using Demo.Web.Extensions
+@model Category
+
+@{
+    ViewData["Title"] = "Thiết lập Danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var parentCategories = ViewBag.Categories as List<Demo.Core.Models.Category>;
+}
+
+<div class="card mt-2 mb-2 shadow-base">
+    <div class="card-body pb-0">
+        <form method="post" enctype="multipart/form-data" asp-controller="Category" asp-action="Edit" id="editForm">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.Created)
+            @Html.HiddenFor(m => m.CreatedBy)
+            @Html.HiddenFor(m => m.FriendlyUrl)
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <!-- Id -->
+            <p>Model ID: @Model.Id</p>
+
+            <!-- CatName -->
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.CatName) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.CatName, new
+                        {
+                            Class = "form-control form-control-smy",
+                            required = "required"
+                        })
+                </div>
+            </div>
+
+            <!-- Alias -->
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Alias) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Alias, new
+                        {
+                            Class = "form-control form-control-smy h-100"
+                        })
+                </div>
+            </div>
+
+            <!-- Danh mục cha -->
+            <div class="row mb-lg-2">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(m => m.ParentCategory)
+                    <select class="form-control" id="parentCategorySelection" name="CategoryId">
+                        @if (Model.ParentCategory?.CatName != null)
+                        {
+                            <!-- Display the selected course -->
+                            <option value="@Model.ParentCategory.Id" selected>@Model.ParentCategory.CatName</option>
+
+                            <!-- Display the list of courses, excluding the selected one -->
+                            @foreach (var category in parentCategories)
+                            {
+                                @if (category.Id != Model.ParentCategory.Id)
+                                {
+                                    <option value="@category.Id">@category.CatName</option>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <!-- Display "Select a Course" if no course is selected -->
+                            <option value="">-- Chọn danh mục cha --</option>
+                            @if (parentCategories != null && parentCategories.Any())
+                            {
+                                @foreach (var category in parentCategories)
+                                {
+                                    <option value="@category.Id" selected="@(Model.ParentCategory?.Id == category.Id ? "selected" : null)">
+                                        @category.CatName
+                                    </option>
+                                }
+                            }
+                            else
+                            {
+                                <option disabled selected>Chưa có danh mục nào được thêm</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Order -->
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Order) @Html.RequireLabel()
+                    @Html.TextBoxFor(m => m.Order, new
+                        {
+                            @type = "number",
+                            @class = "form-control form-control-smy h-100",
+                        })
+                </div>
+            </div>
+
+
+            <!-- Description -->
+            <div class="row mb-lg-2">
+                <div class="col-md-12 col-sm-12 search-item">
+                    @Html.LabelFor(m => m.Description) @Html.RequireLabel()
+                    @Html.TextAreaFor(m => m.Description, new
+                        {
+                            Class = "form-control form-control-smy h-100"
+                        })
+                </div>
+            </div>
+
+            <!-- Active -->
+            <div class="row">
+                <div class="col-md-4 col-sm-6 search-item">
+                    @Html.LabelFor(x => x.Active) &nbsp;
+                    @Html.CheckBoxFor(m => m.Active)
+                </div>
+            </div>
+            <hr />
+            <div class="mb-2">
+                <button class="btn btn-success" type="button" onclick="$('#editForm').submit()">Lưu</button>
+                <a href="@Context.Request.Query["returnUrl"]" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.tiny.cloud/1/mbx1d96tuje4gp42frlv3fq1gpxrftgpiavfttwwubl2fn70/tinymce/6/tinymce.min.js"
+            referrerpolicy="origin"></script>
+    <script>
+        common.initTinyMce('#Content');
+    </script>
+}

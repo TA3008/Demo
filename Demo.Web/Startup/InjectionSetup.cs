@@ -36,6 +36,7 @@ namespace Demo.Web.Startup
             services.AddTransient<ILessonRepository, LessonRepository>();
             //services.AddTransient<IEventRepository, EventRepository>();
             //services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddSingleton<IMongoClient>(s =>
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");

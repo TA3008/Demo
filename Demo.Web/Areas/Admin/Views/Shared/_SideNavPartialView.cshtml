@@ -8,12 +8,24 @@
 <div class="side-nav">
     <div class="side-nav-inner">
         <ul class="side-nav-menu scrollable">
-            @if (allRoles.Contains(RoleList.Account) || allRoles.Contains(RoleList.OrderManager))
+            @if (allRoles.Contains(RoleList.Admin) || allRoles.Contains(RoleList.Account) || allRoles.Contains(RoleList.OrderManager))
             {
                 <li>
                     <a href="/admin/order/index" data-href="/admin/order/edit//admin/order/details" class="br-menu-link">
                         <i class="fa fa-edit"></i>
                         <span>Quản lý đơn hàng</span>
+                    </a>
+                </li>
+            }
+
+            @if (allRoles.Contains(RoleList.Admin))
+            {
+                <li>
+                    <a href="/admin/category/index"
+                       data-href="/admin/account/AddEmployee//admin/account/AssignRoles//admin/account/UserDetails"
+                       class="br-menu-link">
+                        <i class="fa fa-list"></i>
+                        <span>Quản lý danh mục</span>
                     </a>
                 </li>
             }
